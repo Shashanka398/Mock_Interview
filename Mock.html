@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css"
+      integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+      crossorigin="anonymous"
+    />
+    <title>Document</title>
+    <style>
+      body {
+        font-family: "Brandon Grotesque";
+        width: 1200px;
+        margin: 0 auto;
+        background-image: url("pexels-photo-1939485.jpeg");
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-position: center;
+        filter: 30px;
+      }
+
+      form {
+        margin-left: 60px;
+      }
+      .heading {
+        display: flex;
+
+        justify-items: center;
+        padding-left: 500px;
+        align-items: center;
+        font-size: 30px;
+        color: black;
+        font-family: Georgia, "Times New Roman", Times, serif;
+      }
+
+      #randomButton {
+        margin-top: -60px;
+        margin-left: 250px;
+      }
+      #randomResult {
+        margin-left: 60px;
+        font-size: 20px;
+      }
+      .table-container {
+        border: 1px solid black;
+        width: 500px;
+        margin-left: 50px;
+        margin-right: 100px;
+        margin-top: 50px;
+
+        border-radius: 5px;
+        padding: 10px;
+        margin-bottom: 20px;
+      }
+
+      .table-container table {
+        width: 100%;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="heading">
+      Mock interview
+    </div>
+    <form>
+      <div class="form-group">
+        <label for="exampleInputEmail1">Name</label>
+        <input
+          type="text"
+          class="form-control w-50"
+          id="nameOfProblem"
+          placeholder="Enter Problem Name"
+        />
+      </div>
+      <div class="form-group">
+        <label for="exampleInputPassword1">URL</label>
+        <input
+          type="text"
+          class="form-control w-50"
+          id="urlInput"
+          placeholder="Paste URL"
+        />
+      </div>
+
+      <button type="submit" id="submitButton" class="btn btn-primary">
+        Submit
+      </button>
+    </form>
+    <button type="button" id="randomButton" class="btn btn-primary">
+      Random
+    </button>
+    <div id="randomResult"></div>
+    <div class="table-container">
+      <table class="table table-striped table-dark">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Name Of Problem</th>
+            <th scope="col">Link</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+
+    <script
+      src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+      integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+      integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js"
+      integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+      crossorigin="anonymous"
+    ></script>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        let problems = JSON.parse(localStorage.getItem("problems")) || [];
+        const tableBody = document.getElementById("tableBody");
+        renderProblems();
+        document
+          .getElementById("submitButton")
+          .addEventListener("click", function (event) {
+            event.preventDefault();
+            const nameOfProblem = document.getElementById("nameOfProblem")
+              .value;
+            const url = document.getElementById("urlInput").value;
+
+            // Create a new problem object
+            const problem = {
+              name: nameOfProblem,
+              url: url
+            };
+
+            // Add the new problem to the array
+            problems.push(problem);
+
+            // Save the updated array to local storage
+            localStorage.setItem("problems", JSON.stringify(problems));
+
+            // Clear input fields
+            document.getElementById("nameOfProblem").value = "";
+            document.getElementById("urlInput").value = "";
+
+            // Render updated problems
+            renderProblems();
+          });
+
+        // Handle random button click
+        document
+          .getElementById("randomButton")
+          .addEventListener("click", function () {
+            if (problems.length > 0) {
+              // Generate a random index
+              const randomIndex = Math.floor(Math.random() * problems.length);
+
+              // Get the random problem
+              const randomProblem = problems[randomIndex];
+
+              // Display the random problem number and name
+              document.getElementById("randomResult").textContent = `Problem ${
+                randomIndex + 1
+              }: ${randomProblem.name}`;
+            } else {
+              document.getElementById("randomResult").textContent =
+                "No problems available.";
+            }
+          });
+
+        function renderProblems() {
+          // Clear the table body
+          tableBody.innerHTML = "";
+          problems.forEach(function (problem, index) {
+            const row = document.createElement("tr");
+
+            const problemNumber = document.createElement("th");
+            problemNumber.setAttribute("scope", "row");
+            problemNumber.textContent = index + 1;
+            row.appendChild(problemNumber);
+
+            const problemName = document.createElement("td");
+            problemName.textContent = problem.name;
+            row.appendChild(problemName);
+
+            const problemLink = document.createElement("td");
+            const link = document.createElement("a");
+            link.setAttribute("href", problem.url);
+            link.setAttribute("target", "_blank");
+            link.textContent = "Link";
+            problemLink.appendChild(link);
+            row.appendChild(problemLink);
+
+            tableBody.appendChild(row);
+          });
+        }
+      });
+    </script>
+  </body>
+</html>
